@@ -28,7 +28,7 @@ export default function App() {
   const texture = useLoader(LUTCubeLoader, 'https://uploads.codesandbox.io/uploads/user/b3e56831-8b98-4fee-b941-0e27f39883ab/DwlG-F-6800-STD.cube')
 
   return (
-    <Canvas orthographic gl={{ antialias: false }} camera={{ position: [0, 0, 100], zoom: 70 }}>
+    <Canvas orthographic={true} gl={{ antialias: false }} camera={{ position: [0, 0, 100], zoom: 70 }}>
       <color attach="background" args={['black']} />
       <Scene />
       <EffectComposer disableNormalPass>
@@ -86,9 +86,17 @@ function Scene() {
   }, [])
 
   useFrame((state) => {
-    // Tie beam to the mouse.
-    boxreflect.current.setRay([(state.pointer.x * state.viewport.width) / 2, (state.pointer.y * state.viewport.height) / 2, 0], [0, 0, 0])
 
+  // Calculate the rotating angle based on time
+  const angle = state.clock.elapsedTime * rotationSpeed;
+
+  // Calculate the position of the ray based on the rotating angle
+  const rayX = Math.cos(angle) * rayDistance;
+  const rayY = Math.sin(angle) * rayDistance;
+  boxreflect.current.setRay([rayX, rayY, 0], [0, 0, 0]);
+
+  // Other animation or logic for the Scene component...
+});
     // Animate rainbow intensity.
     lerp(rainbow.current.material, 'emissiveIntensity', isPrismHit ? 2.5 : 0, 0.1)
     spot.current.intensity = rainbow.current.material.emissiveIntensity
